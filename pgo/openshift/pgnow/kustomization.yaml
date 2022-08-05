@@ -1,0 +1,14 @@
+namespace: crunchy
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+configMapGenerator:
+  - name: pgnow-init-sql
+    files:
+      - pgnow_init.sql
+
+resources:
+- postgres.yaml
+- postgrest.yaml
+- service-postgrest.yaml

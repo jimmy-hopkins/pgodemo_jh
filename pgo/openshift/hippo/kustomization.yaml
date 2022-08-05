@@ -1,0 +1,4 @@
+namespace: crunchy
+
+resources:
+- postgres.yaml

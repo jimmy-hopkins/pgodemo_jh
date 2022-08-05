@@ -1,0 +1,72 @@
+kind: Job
+apiVersion: batch/v1
+metadata:
+  name: acctdev-backup-info
+  labels:
+    statefulset.kubernetes.io/pod-name: acctdev-repo-host-0
+spec:
+  parallelism: 1
+  completions: 1
+  backoffLimit: 6
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        job-name: acctdev-backup-info
+        statefulset.kubernetes.io/pod-name: acctdev-repo-host-0
+    spec:
+      restartPolicy: Never
+      serviceAccountName: acctdev-pgbackrest
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+      securityContext: {}
+      containers:
+        - resources: {}
+          terminationMessagePath: /dev/termination-log
+          name: pgbackrest
+          command:
+            - bash
+            - -c
+            - --
+            - |-
+                /opt/crunchy/bin/pgbackrest info
+          env:
+            - name: COMMAND
+              value: info
+            - name: COMMAND_OPTS
+              value: '--stanza=db --repo=1'
+            - name: COMPARE_HASH
+              value: 'false'
+            - name: CONTAINER
+              value: pgbackrest
+            - name: NAMESPACE
+              value: finance
+            - name: SELECTOR
+              value: >-
+                postgres-operator.crunchydata.com/cluster=acctdev,postgres-operator.crunchydata.com/pgbackrest=,postgres-operator.crunchydata.com/pgbackrest-dedicated=,postgres-operator.crunchydata.com/pgbackrest-host=
+          securityContext:
+            privileged: false
+            runAsNonRoot: true
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+            - name: pgbackrest-config
+              mountPath: /etc/pgbackrest/conf.d
+          terminationMessagePolicy: File
+          image: >-
+            registry.developers.crunchydata.com/crunchydata/crunchy-pgbackrest:centos8-2.33-0
+      serviceAccount: acctdev-pgbackrest
+      volumes:
+        - name: pgbackrest-config
+          projected:
+            sources:
+              - configMap:
+                  name: acctdev-pgbackrest-config
+                  items:
+                    - key: pgbackrest_repo.conf
+                      path: pgbackrest_repo.conf
+                    - key: config-hash
+                      path: config-hash
+            defaultMode: 420
+      dnsPolicy: ClusterFirst
