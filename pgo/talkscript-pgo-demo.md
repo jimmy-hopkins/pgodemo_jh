@@ -89,7 +89,7 @@ kubectl exec -c database -n crunchy $(kubectl get pod --selector="postgres-opera
 kubectl exec -c database -n crunchy $(kubectl get pod --selector="postgres-operator.crunchydata.com/cluster=hippo,postgres-operator.crunchydata.com/role=master" -o name -n crunchy) -- pgbench -T 600 -j 2 -c 10
 
 export DATABASE_URL='user=postgres password=welcome1 host=hippo-openshift port=5432 database=postgres sslmode=require'
-../pgSimload_mac
+../../loadsim/pgSimload_mac
 ```
 
 > **ACTION: Monitoring**

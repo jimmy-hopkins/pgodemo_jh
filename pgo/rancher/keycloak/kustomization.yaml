@@ -1,5 +1,0 @@
-namespace: keycloak
-
-resources:
-- postgres.yaml
-- keycloak.yaml
