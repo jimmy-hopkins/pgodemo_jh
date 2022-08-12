@@ -3,18 +3,35 @@ kind: PostgresCluster
 metadata:
   name: hippo
 spec:
+
+  ###################################################################
+  ##  Clone from Bridge
+  ###################################################################
+  dataSource:
+    pgbackrest:
+      configuration:
+        - secret:
+            name: pgo-azure-creds
+      stanza: 47wuxjejivdl7gui6thjyk5j4i
+      global:
+        repo1-path: /
+      repo:
+        name: repo1
+        azure:
+          container: "47wuxjejivdl7gui6thjyk5j4i"
+
   ###################################################################
   ##  General Information about PostgreSQL
   ###################################################################
   #crunchy-postgres:ubi8-14.3-0
   #crunchy-postgres:ubi8-14.4-0
-  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.3-0
+  image: registry.developers.crunchydata.com/crunchydata/crunchy-postgres:ubi8-14.4-0
   openshift: true
   port: 5432
   postgresVersion: 14
   instances:
     - name: 'pgc'
-      replicas: 3
+      replicas: 2
       dataVolumeClaimSpec:
         accessModes:
         - "ReadWriteOnce"
